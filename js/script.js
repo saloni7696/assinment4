@@ -1,4 +1,4 @@
-const apiKey = 'YOUR_API_KEY'; // Replace with your LinkedIn API key
+const apiKey = '103128e06emsh9c3d9c2c93bba2bp1c80ccjsn84f6646e2f95'; // Replace with your LinkedIn API key
         const apiUrl = 'https://api.linkedin.com/v2/'; // Base URL for LinkedIn API
 
         const searchInput = document.querySelector('.search');

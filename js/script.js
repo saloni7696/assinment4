@@ -1,51 +1,55 @@
-const apiKey = '103128e06emsh9c3d9c2c93bba2bp1c80ccjsn84f6646e2f95'; // Replace with your LinkedIn API key
-        const apiUrl = 'https://api.linkedin.com/v2/'; // Base URL for LinkedIn API
+document.addEventListener('DOMContentLoaded', () => {
+    const profileInfoContainer = document.querySelector('.profile-info');
+    const searchButton = document.getElementById('search-btn');
 
-        const searchInput = document.querySelector('.search');
-        const searchButton = document.querySelector('.submit');
-        const profileInfo = document.querySelector('.profile-info');
+    searchButton.addEventListener('click', async () => {
+        const username = document.getElementById('search').value;
+        if (!username) {
+            alert('Please enter a username.');
+            return;
+        }
 
-        searchButton.addEventListener('click', fetchUserProfile);
-
-        function fetchUserProfile() {
-            const username = searchInput.value.trim();
-
-            if (username === '') {
-                alert('Please enter a LinkedIn username.');
-                return;
+        const url = `https://linkedin-api8.p.rapidapi.com/?username=${username}`;
+        const options = {
+            method: 'GET',
+            headers: {
+                'X-RapidAPI-Key': '103128e06emsh9c3d9c2c93bba2bp1c80ccjsn84f6646e2f95',
+                'X-RapidAPI-Host': 'linkedin-api8.p.rapidapi.com'
             }
+        };
 
-            const profileUrl = `${apiUrl}people/?q=username:${username}`;
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.log(data);
 
-            fetch(profileUrl, {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + apiKey,
-                    'cache-control': 'no-cache',
-                    'X-Restli-Protocol-Version': '2.0.0'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Display user profile information
-                displayProfileInfo(data.elements[0]);
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-            });
-        }
+            // Extract first name, last name, and profile picture URL from the response
+            const firstName = data.firstName;
+            const lastName = data.lastName;
+            const profilePicUrl = data.profilePicture;
+            const isOpenToWork = data.isOpenToWork;
 
-        // Function to display user profile information
-        function displayProfileInfo(profileData) {
-            const profileDetails = `
-                <h2>${profileData.firstName} ${profileData.lastName}</h2>
-                <p>Headline: ${profileData.headline}</p>
-                <!-- Add more profile details here -->
+            // Create an image element
+            const img = document.createElement('img');
+            img.src = profilePicUrl;
+            img.alt = 'Profile Picture';
+
+            // Display the extracted information
+            profileInfoContainer.innerHTML = ''; // Clear previous content
+            profileInfoContainer.appendChild(img);
+            profileInfoContainer.innerHTML += `
+                <p>First Name: ${firstName}</p>
+                <p>Last Name: ${lastName}</p>
+                <p>Is Open to Work: ${isOpenToWork}</p>
             `;
-            profileInfo.innerHTML = profileDetails;
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            alert('An error occurred while fetching data. Please try again.');
         }
+    });
+});
+// this is the ai that i used https://rapidapi.com/rockapis-rockapis-default/api/linkedin-api8
